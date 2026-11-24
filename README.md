@@ -20,6 +20,10 @@ FastAPI-Docker-Tutorial/
 ├── .github/
 │   └── workflows/
 │       └── ActionsYaml.yaml
+├── screenshots/
+│   ├── github-actions-success.png
+│   ├── scaling-load-balancing.png
+│   └── final-output.png
 ├── .gitignore
 ├── Dockerfile
 ├── main.py
@@ -38,12 +42,7 @@ The project contains a FastAPI Student API with the following endpoints:
 | GET | `/health` | Returns the health status of the API |
 | GET | `/students` | Returns the student list |
 
-The application also includes middleware for structured request logging. Each request records information such as:
-
-- HTTP method
-- Request path
-- Response status
-- Request duration
+The application also includes middleware for structured request logging. Each request records the HTTP method, request path, response status, and request duration.
 
 Example:
 
@@ -94,10 +93,6 @@ The image can be downloaded using:
 docker pull ritkriti/fastapi-app:v0.1
 ```
 
-### Docker Hub Output
-
-![Docker Hub Image](screenshots/dockerhub-image.png)
-
 ## 4. CI/CD with GitHub Actions
 
 The repository contains a GitHub Actions workflow under:
@@ -143,10 +138,6 @@ INFO method=GET path=/health status=200 duration_ms=0.60
 INFO method=GET path=/health status=200 duration_ms=0.52
 ```
 
-### Structured Logging Output
-
-![Structured Logs](screenshots/structured-logs.png)
-
 ## 6. Response Time Measurement
 
 The response time of the API can be measured using PowerShell:
@@ -155,7 +146,7 @@ The response time of the API can be measured using PowerShell:
 Measure-Command { curl.exe -s http://localhost:8000/students }
 ```
 
-This helps observe application response time and provides a basic demonstration of backend monitoring.
+This provides a basic demonstration of observing application response time.
 
 ## 7. Horizontal Scaling
 
@@ -163,7 +154,6 @@ Two independent instances of the same FastAPI Docker image are run simultaneousl
 
 ```bash
 docker run -d --name fastapi-1 -p 8001:8000 ritkriti/fastapi-app:v0.1
-
 docker run -d --name fastapi-2 -p 8002:8000 ritkriti/fastapi-app:v0.1
 ```
 
@@ -176,15 +166,9 @@ curl http://localhost:8002/health
 
 Both containers internally use port `8000`, while the host exposes them through ports `8001` and `8002`.
 
-### Multiple FastAPI Instances
-
-![Horizontal Scaling](screenshots/horizontal-scaling.png)
-
 ## 8. Nginx Load Balancing
 
 Nginx is used as a load balancer in front of the two FastAPI instances.
-
-The architecture is:
 
 ```text
                     ┌── FastAPI Instance 1 :8001
@@ -206,19 +190,19 @@ Requests are then sent through the load balancer:
 curl http://localhost:8080/health
 ```
 
-Multiple requests through port `8080` are distributed between the two FastAPI containers.
+Multiple requests through port `8080` can be distributed between the two FastAPI containers.
 
-### Nginx Load Balancing
+### Scaling and Load Balancing Output
 
-![Nginx Load Balancing](screenshots/nginx-load-balancing.png)
+The following output shows two FastAPI instances running on ports `8001` and `8002`, the Nginx load balancer running on port `8080`, and a successful health request through the load balancer.
+
+![Scaling and Load Balancing](screenshots/scaling-load-balancing.png)
 
 ## 9. End-to-End CI/CD Verification
 
 A visible change was made to the FastAPI application's root endpoint and pushed to GitHub.
 
-The push triggered GitHub Actions, which rebuilt the Docker image and pushed the updated image to Docker Hub.
-
-The updated image was then pulled and executed locally.
+The push triggered GitHub Actions, which rebuilt the Docker image and pushed the updated image to Docker Hub. The updated image was then pulled and executed locally.
 
 Final API response:
 
